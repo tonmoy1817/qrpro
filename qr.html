@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch QR Pro HD | Secured</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root { --primary: #6366f1; --secondary: #4f46e5; --success: #22c55e; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; user-select: none; }
+        .container { max-width: 850px; margin: 40px auto; background: #ffffff; padding: 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); flex-grow: 1; border: 1px solid #f1f5f9; }
+        h2 { color: var(--secondary); text-align: center; font-size: 2.2rem; margin-bottom: 5px; font-weight: 800; }
+        .sub-title { text-align: center; color: #64748b; margin-bottom: 30px; font-size: 16px; }
+        textarea { width: 100%; height: 180px; padding: 20px; border-radius: 16px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; transition: 0.3s; box-sizing: border-box; resize: vertical; }
+        textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        .btn-group { margin-top: 30px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+        button { padding: 16px 32px; font-size: 16px; font-weight: 700; cursor: pointer; border: none; border-radius: 14px; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .gen-btn { background: var(--primary); color: white; }
+        .gen-btn:hover { background: var(--secondary); transform: translateY(-2px); box-shadow: 0 8px 15px rgba(99, 102, 241, 0.2); }
+        .dl-btn { background: var(--success); color: white; display: none; }
+        .dl-btn:hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 8px 15px rgba(34, 197, 94, 0.2); }
+        #qr-display { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px; margin-top: 45px; }
+        .qr-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); text-align: center; border: 1px solid #f1f5f9; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        canvas, img { max-width: 100%; height: auto; border-radius: 8px; margin: 0 auto; }
+        .qr-card p { margin-top: 15px; font-weight: 700; color: #1e293b; font-size: 14px; border-top: 1px solid #eee; padding-top: 10px; }
+        footer { text-align: center; padding: 40px; margin-top: auto; border-top: 1px solid #e2e8f0; font-size: 15px; color: #64748b; background: white; }
+        #credit-link { color: var(--secondary); text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div class="container">
+    <h2 id="main-h"></h2>
+    <p class="sub-title">হাই-রেজোলিউশন ব্যাচ কিউআর জেনারেটর প্রো</p>
+    
+    <textarea id="dataBox" placeholder="এখানে ডাটা বা রোল নম্বর লিখুন (প্রতি লাইনে একটি)"></textarea>
+    
+    <div class="btn-group">
+        <button class="gen-btn" onclick="startGen()">🚀 HD QR তৈরি করুন</button>
+        <button id="dlBtn" class="dl-btn" onclick="saveZip()">📥 সব PNG ডাউনলোড</button>
+    </div>
+
+    <div id="qr-display"></div>
+</div>
+
+<footer>
+    <div id="author-info"></div>
+</footer>
+
+<script>
+    /* PROTECTED SOURCE CODE 
+       DEVELOPED BY MD. MUBAIDUL ISLAM
+    */
+    
+    // Obfuscated Strings for Protection
+    const _0x_v = ['\x42\x61\x74\x63\x68\x20\x51\x52\x20\x50\x72\x6f\x20\x48\x44', '\x4d\x64\x2e\x20\x4d\x75\x62\x61\x69\x64\x75\x6c\x20\x49\x73\x6c\x61\x6d', '\x2b\x38\x38\x30\x31\x36\x30\x33\x2d\x35\x30\x34\x37\x35\x30'];
+
+    (function() {
+        document.getElementById('main-h').innerText = _0x_v[0];
+        const auth = document.getElementById('author-info');
+        auth.innerHTML = `<strong>Developed by: <span style="color:#4f46e5">${_0x_v[1]}</span></strong><br>Contact: <a id="credit-link" href="tel:${_0x_v[2].replace('-','')}">${_0x_v[2]}</a>`;
+    })();
+
+    // Security: Blocks Inspect, F12, Right-click
+    document.onkeydown = e => {
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74)) || (e.ctrlKey && e.keyCode == 85)) return false;
+    };
+
+    let dataItems = [];
+
+    function startGen() {
+        const input = document.getElementById('dataBox').value;
+        const container = document.getElementById('qr-display');
+        dataItems = input.split('\n').map(s => s.trim()).filter(s => s !== "");
+        container.innerHTML = "";
+
+        if (dataItems.length === 0) return alert("দয়া করে ডাটা ইনপুট দিন!");
+
+        dataItems.forEach((val, i) => {
+            const card = document.createElement('div');
+            card.className = 'qr-card';
+            const qb = document.createElement('div');
+            qb.id = 'qb-' + i;
+            const lbl = document.createElement('p');
+            lbl.innerText = "Roll: " + val;
+            
+            card.appendChild(qb);
+            card.appendChild(lbl);
+            container.appendChild(card);
+
+            new QRCode(qb, {
+                text: val,
+                width: 512,
+                height: 512,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        });
+        document.getElementById('dlBtn').style.display = "flex";
+    }
+
+    async function saveZip() {
+        const zip = new JSZip();
+        const fold = zip.folder("HD_QR_Collection");
+        const cards = document.querySelectorAll('.qr-card canvas');
+
+        cards.forEach((canv, i) => {
+            const imgData = canv.toDataURL("image/png").split(',')[1];
+            fold.file(dataItems[i] + ".png", imgData, {base64: true});
+        });
+
+        const blob = await zip.generateAsync({type: "blob"});
+        saveAs(blob, "QR_Mubaidul_Islam.zip");
+    }
+</script>
+
+</body>
+</html>
